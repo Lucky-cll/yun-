@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>ISP04 自己紹介カード</title>
+    <script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
+    <style>
+      .input-area {
+        margin-bottom: 20px;
+      }
+
+      .input-item {
+        margin: 8px 0;
+      }
+
+      .card {
+        border: 2px solid #f00673;
+        padding: 15px;
+        width: 350px;
+        margin-top: 10px;
+      }
+
+      .age-un {
+        background-color: #67c6f2;
+      }
+
+      .age-ov {
+        background-color: #c77474;
+      }
+
+      button {
+        padding: 6px 12px;
+        margin-right: 10px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>自己紹介カード作成</h2>
+    <div class="input-area">
+      <div class="input-item">学号：<input type="text" id="studentId" /></div>
+      <div class="input-item">名前：<input type="text" id="name" /></div>
+      <div class="input-item">年齢：<input type="number" id="age" min="0" max="150" /></div>
+      <div class="input-item">手机号码：<input type="text" id="phone" /></div>
+      <div class="input-item">爱好：<input type="text" id="hobby" /></div>
+      <button id="createbtn">カードを作成</button>
+      <button id="togglebtn">カードを切换</button>
+    </div>
+
+    <div id="cardArea"></div>
+
+    <script>
+      $(function () {
+        const ageStandard = 30
+        function renderCard(userData) {
+          let cardStyle = ''
+          if (userData.age <= ageStandard) {
+            cardStyle = 'age-un'
+          } else {
+            cardStyle = 'age-ov'
+          }
+          const cardContent = `
+                    <div class="card ${cardStyle}">
+                        <p>学号：${userData.studentId}</p>
+                        <p>名前：${userData.name}</p>
+                        <p>年齢：${userData.age}歳</p>
+                        <p>手机号码：${userData.phone}</p>
+                        <p>爱好：${userData.hobby}</p>
+                    </div>
+                `
+          $('#cardArea').html(cardContent)
+        }
+        $('#createbtn').click(function () {
+          const studentId = $('#studentId').val().trim()
+          const name = $('#name').val().trim()
+          const age = Number($('#age').val())
+          const phone = $('#phone').val().trim()
+          const hobby = $('#hobby').val().trim()
+          if (studentId === '') {
+            alert('学号を入力してください！')
+            $('#studentId').focus()
+            return
+          }
+          if (name === '') {
+            alert('名前を入力してください！')
+            $('#name').focus()
+            return
+          }
+          if (age < 0 || age > 150) {
+            alert('年齢は0～150の数字を入力してください！')
+            $('#age').focus()
+            return
+          }
+          if (phone === '') {
+            alert('手机号码を入力してください！')
+            $('#phone').focus()
+            return
+          }
+          if (hobby === '') {
+            alert('爱好を入力してください！')
+            $('#hobby').focus()
+            return
+          }
+
+          const userData = {
+            studentId: studentId,
+            name: name,
+            age: age,
+            phone: phone,
+            hobby: hobby,
+          }
+          renderCard(userData)
+          $('#studentId').val('')
+          $('#name').val('')
+          $('#age').val('')
+          $('#phone').val('')
+          $('#hobby').val('')
+          $('#studentId').focus()
+        })
+
+        $('#togglebtn').click(function () {
+          $('#cardArea').toggle()
+        })
+      })
+    </script>
+  </body>
+</html>

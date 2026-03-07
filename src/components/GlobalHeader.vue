@@ -10,22 +10,111 @@
         </router-link>
       </a-col>
       <a-col flex="auto">
-        <a-menu v-model:selectedKeys="current" mode="horizontal" :items="items" @click="doMenuclick" />
+        <a-menu
+          v-model:selectedKeys="current"
+          mode="horizontal"
+          :items="items"
+          @click="doMenuclick"
+        />
       </a-col>
       <a-col flex="120px">
         <div class="user-login-status">
           <div v-if="userStore.loginUser.id">
-            {{ userStore.loginUser.userName ?? "无名" }}
+            <a-dropdown>
+              <a-space>
+                <a-avatar :size="32" :src="userStore.loginUser.userAvatar" />
+                {{ userStore.loginUser.userName ?? '无名' }}
+              </a-space>
+              <template #overlay>
+                <a-menu>
+                  <a-menu-item>
+                    <a href="javascript:;" @click="doLogout"><LogoutOutlined />  退出登录</a>
+                  </a-menu-item>
+                </a-menu>
+              </template>
+            </a-dropdown>
           </div>
           <div v-else>
-            <a-button type="primary" href="/user/login">登录</a-button>
+            <router-link to="/user/login">
+              <a-button type="primary">登录</a-button>
+            </router-link>
           </div>
-
         </div>
       </a-col>
     </a-row>
   </div>
 </template>
+
+<script lang="ts" setup>
+import { h, onMounted, ref } from 'vue'
+import { AppstoreOutlined, HomeOutlined,LogoutOutlined } from '@ant-design/icons-vue'
+import type { MenuProps } from 'ant-design-vue'
+import { useRouter } from 'vue-router'
+import { useLoginUserStore} from '@/stores/useLoginUserStore'
+import { userLogoutUsingPost } from '@/api/userController'
+import { message } from 'ant-design-vue'
+import { computed } from 'vue'
+const userStore = useLoginUserStore()
+const originalItems = [
+  {
+    key: '/',
+    icon: () => h(HomeOutlined),
+    label: '首页',
+    title: '首页',
+  },
+  {
+    key: '/admin/userManage',
+    icon: () => h(AppstoreOutlined),
+    label: '用户管理',
+    title: '用户管理',
+  },
+
+  {
+    key: '编程导航',
+    label: h('a', { href: 'https://www.codefather.cn', target: '_blank' }, '编程导航'),
+    title: '编程导航',
+  },
+]
+const filterMenu = (menus = [] as MenuProps['items']) => {
+  return menus?.filter((item) => {
+    if((item?.key as string).startsWith('/admin')){
+      const loginUser = userStore.loginUser
+      if(!loginUser || loginUser.userRole !== 'admin'){
+        return false
+      }
+    }
+    return true
+  })
+}
+const items = computed(() => filterMenu(originalItems))
+const current = ref<string[]>(['/'])
+const router = useRouter()
+const doMenuclick = ({ key }: { key: string }) => {
+  //router.push({path:key})
+  router.push(key)
+}
+router.afterEach((to, from, next) => {
+  current.value = [to.path]
+})
+
+// 退出登录
+const doLogout = async () => {
+  const res = await userLogoutUsingPost()
+  if(res.data.code === 0){
+    userStore.setLoginUser({
+      userName:'未登录'
+    })
+    message.success('退出登录成功')
+    router.push({
+      path: '/user/login',
+      replace: true
+    })
+  }else{
+    message.error("退出登录失败："+res.data.message)
+  }
+}
+onMounted(() => {})
+</script>
 <style scoped>
 #globalHeader .title-bar {
   display: flex;
@@ -40,44 +129,9 @@
   color: black;
   margin-left: 10px;
 }
-</style>
-<script lang="ts" setup>
-import { h, onMounted, ref } from 'vue'
-import { AppstoreOutlined, HomeOutlined } from '@ant-design/icons-vue'
-import type { MenuProps } from 'ant-design-vue'
-import { useRouter } from 'vue-router'
-import { useLoginUserStore } from '@/stores/useLoginUserStore'
-const userStore = useLoginUserStore()
-const items = ref<MenuProps['items']>([
-  {
-    key: '/',
-    icon: () => h(HomeOutlined),
-    label: '首页',
-    title: '首页',
-  },
-  {
-    key: '/about',
-    icon: () => h(AppstoreOutlined),
-    label: '关于',
-    title: '关于',
-  },
-
-  {
-    key: '编程导航',
-    label: h('a', { href: 'https://www.codefather.cn', target: '_blank' }, '编程导航'),
-    title: '编程导航',
-  },
-])
-const current = ref<string[]>(['/'])
-const router = useRouter()
-const doMenuclick = ({ key }: { key: string }) => {
-  //router.push({path:key})
-  router.push(key)
+.user-login-status {
+  display: flex;
+  align-items: center;
+  padding: 10px;
 }
-router.afterEach((to,from,next)=>{
-  current.value = [to.path]
-})
-onMounted(()=>{
-  userStore.fetchLoginUser()
-})
-</script>
+</style>
