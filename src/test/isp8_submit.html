@@ -1,0 +1,148 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>ISP08</title>
+    <script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
+    <style>
+      .win {
+        color: green;
+      }
+      .lose {
+        color: red;
+      }
+      .draw {
+        color: gray;
+      }
+      .delete {
+        margin-left: 10px;
+        border: 1px solid pink;
+        color: rgb(12, 12, 27);
+        background-color: antiquewhite;
+      }
+      .streak-message {
+        color: #e67e22;
+        font-weight: bold;
+        margin: 10px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <input type="text" id="name" placeholder="名前" />
+    <input type="checkbox" id="cpuEnhance" /> CPU強化
+    <button class="hand" data-hand="✊">✊</button>
+    <button class="hand" data-hand="✌️">✌️</button>
+    <button class="hand" data-hand="✋">✋</button>
+    <div id="streak" class="streak-message"></div>
+    <h3 id="score"></h3>
+    <ul id="history"></ul>
+
+    <script>
+      $(function () {
+        var historyList = []
+        var handList = ['✊', '✌️', '✋']
+        function judgeResult(playerHand, cpuHand) {
+          if (playerHand === cpuHand) {
+            return '引き分け'
+          }
+          if (
+            (playerHand === '✊' && cpuHand === '✌️') ||
+            (playerHand === '✌️' && cpuHand === '✋') ||
+            (playerHand === '✋' && cpuHand === '✊')
+          ) {
+            return '勝ち'
+          }
+          return '負け'
+        }
+        function getCpuHand(playerHand) {
+          var isEnhanceMode = $('#cpuEnhance').is(':checked')
+          if (!isEnhanceMode) {
+            return handList[Math.floor(Math.random() * 3)]
+          }
+          var randomNum = Math.random()
+          if (randomNum < 0.6) {
+            if (playerHand === '✊') return '✋'
+            if (playerHand === '✌️') return '✊'
+            if (playerHand === '✋') return '✌️'
+          } else {
+            return handList[Math.floor(Math.random() * 3)]
+          }
+        }
+        function checkThreeWinStreak() {
+          var streakCount = 0
+          for (var i = historyList.length - 1; i >= 0; i--) {
+            if (historyList[i].result === '勝ち') {
+              streakCount++
+              if (streakCount === 3) {
+                $('#streak').text('3連勝おめでとう！')
+                return
+              }
+            } else {
+              break
+            }
+          }
+          $('#streak').text('')
+        }
+
+        function renderPage() {
+          $('#history').empty()
+          var winCount = 0,
+            loseCount = 0,
+            drawCount = 0
+          for (var i = 0; i < historyList.length; i++) {
+            var historyItem = historyList[i]
+            var resultClass = 'draw'
+            if (historyItem.result === '勝ち') {
+              resultClass = 'win'
+              winCount++
+            } else if (historyItem.result === '負け') {
+              resultClass = 'lose'
+              loseCount++
+            } else {
+              drawCount++
+            }
+            var listItem = $(`
+            <li>
+              <span class="${resultClass}">
+                ${historyItem.name} 自分:${historyItem.player} CPU:${historyItem.cpu} ${historyItem.result}
+              </span>
+              <button class="delete" data-index="${i}">削除</button>
+            </li>
+          `)
+            $('#history').append(listItem)
+          }
+          var totalCount = winCount + loseCount + drawCount
+          var winRate = totalCount === 0 ? 0 : ((winCount / totalCount) * 100).toFixed(1)
+          $('#score').text(
+            `勝ち:${winCount} / 負け:${loseCount} / 引き分け:${drawCount} / 勝率:${winRate}%`,
+          )
+          checkThreeWinStreak()
+        }
+        $('.hand').on('click', function () {
+          var playerName = $('#name').val() || '名無し'
+          var selectHand = $(this).data('hand')
+          var cpuSelectHand = getCpuHand(selectHand)
+          var gameResult = judgeResult(selectHand, cpuSelectHand)
+          historyList.push({
+            name: playerName,
+            player: selectHand,
+            cpu: cpuSelectHand,
+            result: gameResult,
+          })
+
+          if (historyList.length > 10) {
+            historyList.shift()
+          }
+
+          renderPage()
+        })
+
+        $('#history').on('click', '.delete', function () {
+          var deleteIndex = $(this).data('index')
+          historyList.splice(deleteIndex, 1)
+          renderPage()
+        })
+      })
+    </script>
+  </body>
+</html>

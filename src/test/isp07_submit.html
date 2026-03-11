@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>ISP07</title>
+    <script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
+    <style>
+      .card {
+        border: 1px solid #000;
+        padding: 8px;
+        margin: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <input type="text" id="name" placeholder="名前" />
+    <input type="number" id="age" placeholder="年齢" />
+    <button id="add">追加</button>
+
+    <div id="list"></div>
+
+    <script>
+      $(function () {
+        var userList = []
+        function render() {
+          $('#list').empty()
+          for (var i = 0; i < userList.length; i++) {
+            var user = userList[i]
+            var card = $("<div class='card'></div>")
+            card.append('名前：' + user.name + '<br>')
+            card.append('年齢：' + user.age + '歳')
+            $('#list').append(card)
+          }
+        }
+        $('#add').click(function () {
+          var name = $('#name').val()
+          var age = Number($('#age').val())
+          var user = {
+            name: name,
+            age: age,
+          }
+          userList.push(user)
+          $('#name').val('')
+          $('#age').val('')
+          render()
+        })
+      })
+    </script>
+  </body>
+</html>

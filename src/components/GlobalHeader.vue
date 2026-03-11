@@ -30,6 +30,9 @@
                   <a-menu-item>
                     <a href="javascript:;" @click="doLogout"><LogoutOutlined />  退出登录</a>
                   </a-menu-item>
+                  <a-menu-item>
+                    <a href="javascript:;" @click="doUserInfo"><HeartOutlined /> 用户中心</a>
+                  </a-menu-item>
                 </a-menu>
               </template>
             </a-dropdown>
@@ -47,7 +50,7 @@
 
 <script lang="ts" setup>
 import { h, onMounted, ref } from 'vue'
-import { AppstoreOutlined, HomeOutlined,LogoutOutlined } from '@ant-design/icons-vue'
+import { AppstoreOutlined, HomeOutlined,LogoutOutlined ,HeartOutlined ,PlusOutlined} from '@ant-design/icons-vue'
 import type { MenuProps } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
 import { useLoginUserStore} from '@/stores/useLoginUserStore'
@@ -68,12 +71,24 @@ const originalItems = [
     label: '用户管理',
     title: '用户管理',
   },
-
+  {
+    key: '/add-picture',
+    icon: () => h(PlusOutlined),
+    label: '上传图片',
+    title: '上传图片',
+  },
+  {
+    key: '/admin/pictureManage',
+    icon: () => h(AppstoreOutlined),
+    label: '图片管理',
+    title: '图片管理',
+  },
   {
     key: '编程导航',
     label: h('a', { href: 'https://www.codefather.cn', target: '_blank' }, '编程导航'),
     title: '编程导航',
   },
+
 ]
 const filterMenu = (menus = [] as MenuProps['items']) => {
   return menus?.filter((item) => {
@@ -112,6 +127,13 @@ const doLogout = async () => {
   }else{
     message.error("退出登录失败："+res.data.message)
   }
+}
+// 跳转用户中心
+const doUserInfo = async () => {
+  router.push({
+    path: '/user/userInfo',
+    replace: true
+  })
 }
 onMounted(() => {})
 </script>

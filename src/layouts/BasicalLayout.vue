@@ -1,11 +1,11 @@
 <template>
   <div id="basicalLayout">
-    <a-layout style="height: 100vh">
+    <a-layout :style="{ background: 'white' }">
       <a-layout-header class="header">
         <GlobalHeader />
       </a-layout-header>
-      <a-layout-content class="content">
-        <div>
+      <a-layout-content class="content" :style="{ borderBottom: 'none' }">
+        <div class="main-content">
           <router-view />
         </div>
       </a-layout-content>
@@ -19,6 +19,11 @@
 import GlobalHeader from '../components/GlobalHeader.vue'
 </script>
 <style scoped>
+#basicalLayout {
+  height: 100vh;
+  width: 100%;
+}
+
 #basicalLayout .footer {
   background-color: #efefef;
   padding: 16px;
@@ -27,13 +32,20 @@ import GlobalHeader from '../components/GlobalHeader.vue'
   right: 0;
   bottom: 0;
   text-align: center;
+  z-index: 10;
 }
+
 #basicalLayout .content {
   background-color: white;
   margin: 10px;
+  padding-bottom: 70px;
 }
+
 #basicalLayout .header {
   background-color: white;
   margin-bottom: 10px;
 }
+
+/* 🔥 核心：彻底重置 AntD Layout 的所有视觉分隔线 */
+
 </style>
