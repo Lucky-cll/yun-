@@ -14,8 +14,10 @@
     "openapi": "node openapi.config.js"
   },
   "dependencies": {
+    "@types/file-saver": "^2.0.7",
     "ant-design-vue": "^4.2.6",
     "axios": "^1.13.6",
+    "file-saver": "^2.0.5",
     "pinia": "^2.2.6",
     "vue": "^3.5.13",
     "vue-router": "^4.4.5"

@@ -2,7 +2,7 @@ import axios from 'axios'
 import type { AxiosInstance } from 'axios'
 const myAxios: AxiosInstance = axios.create({
   baseURL: '',
-  timeout: 5000,
+  timeout: 30000,
   withCredentials: true,
 })
 // 添加请求拦截器

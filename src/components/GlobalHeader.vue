@@ -28,10 +28,16 @@
               <template #overlay>
                 <a-menu>
                   <a-menu-item>
-                    <a href="javascript:;" @click="doLogout"><LogoutOutlined />  退出登录</a>
+                    <a href="javascript:;" @click="doLogout"><LogoutOutlined /> 退出登录</a>
                   </a-menu-item>
                   <a-menu-item>
                     <a href="javascript:;" @click="doUserInfo"><HeartOutlined /> 用户中心</a>
+                  </a-menu-item>
+                  <a-menu-item>
+                    <router-link to="/my-space">
+                      <UserOutlined />
+                      我的空间
+                    </router-link>
                   </a-menu-item>
                 </a-menu>
               </template>
@@ -50,10 +56,17 @@
 
 <script lang="ts" setup>
 import { h, onMounted, ref } from 'vue'
-import { AppstoreOutlined, HomeOutlined,LogoutOutlined ,HeartOutlined ,PlusOutlined} from '@ant-design/icons-vue'
+import {
+  AppstoreOutlined,
+  HomeOutlined,
+  LogoutOutlined,
+  HeartOutlined,
+  PlusOutlined,
+  UserOutlined,
+} from '@ant-design/icons-vue'
 import type { MenuProps } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
-import { useLoginUserStore} from '@/stores/useLoginUserStore'
+import { useLoginUserStore } from '@/stores/useLoginUserStore'
 import { userLogoutUsingPost } from '@/api/userController'
 import { message } from 'ant-design-vue'
 import { computed } from 'vue'
@@ -84,17 +97,22 @@ const originalItems = [
     title: '图片管理',
   },
   {
+    key: '/admin/spaceManage',
+    icon: () => h(AppstoreOutlined),
+    label: '空间管理',
+    title: '空间管理',
+  },
+  {
     key: '编程导航',
     label: h('a', { href: 'https://www.codefather.cn', target: '_blank' }, '编程导航'),
     title: '编程导航',
   },
-
 ]
 const filterMenu = (menus = [] as MenuProps['items']) => {
   return menus?.filter((item) => {
-    if((item?.key as string).startsWith('/admin')){
+    if ((item?.key as string).startsWith('/admin')) {
       const loginUser = userStore.loginUser
-      if(!loginUser || loginUser.userRole !== 'admin'){
+      if (!loginUser || loginUser.userRole !== 'admin') {
         return false
       }
     }
@@ -115,24 +133,24 @@ router.afterEach((to, from, next) => {
 // 退出登录
 const doLogout = async () => {
   const res = await userLogoutUsingPost()
-  if(res.data.code === 0){
+  if (res.data.code === 0) {
     userStore.setLoginUser({
-      userName:'未登录'
+      userName: '未登录',
     })
     message.success('退出登录成功')
     router.push({
       path: '/user/login',
-      replace: true
+      replace: true,
     })
-  }else{
-    message.error("退出登录失败："+res.data.message)
+  } else {
+    message.error('退出登录失败：' + res.data.message)
   }
 }
 // 跳转用户中心
 const doUserInfo = async () => {
   router.push({
     path: '/user/userInfo',
-    replace: true
+    replace: true,
   })
 }
 onMounted(() => {})
@@ -155,5 +173,8 @@ onMounted(() => {})
   display: flex;
   align-items: center;
   padding: 10px;
+}
+.logo {
+  border-radius: 8px;
 }
 </style>

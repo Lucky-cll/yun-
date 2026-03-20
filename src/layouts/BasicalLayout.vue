@@ -1,14 +1,18 @@
 <template>
   <div id="basicalLayout">
-    <a-layout :style="{ background: 'white' }">
+    <a-layout>
       <a-layout-header class="header">
         <GlobalHeader />
       </a-layout-header>
-      <a-layout-content class="content" :style="{ borderBottom: 'none' }">
-        <div class="main-content">
-          <router-view />
-        </div>
-      </a-layout-content>
+      <a-layout>
+        <GlobalSider />
+        <a-layout-content class="content" :style="{ borderBottom: 'none' }">
+          <div class="main-content">
+            <router-view />
+          </div>
+        </a-layout-content>
+      </a-layout>
+
       <a-layout-footer class="footer">
         <a href="hhtps://www.codefather.cn" target="_blank">编程导航 by lucky斩</a>
       </a-layout-footer>
@@ -17,6 +21,7 @@
 </template>
 <script setup lang="ts">
 import GlobalHeader from '../components/GlobalHeader.vue'
+import GlobalSider from '../components/GlobalSider.vue'
 </script>
 <style scoped>
 #basicalLayout {
@@ -37,15 +42,16 @@ import GlobalHeader from '../components/GlobalHeader.vue'
 
 #basicalLayout .content {
   background-color: white;
-  margin: 10px;
+  margin: 1px;
   padding-bottom: 70px;
 }
 
 #basicalLayout .header {
   background-color: white;
-  margin-bottom: 10px;
+  margin-bottom: 1px;
 }
-
-/* 🔥 核心：彻底重置 AntD Layout 的所有视觉分隔线 */
-
+#basicalLayout :deep(.ant-meun-root) {
+  border-bottom: none !important;
+  border-inline-end: none !important;
+}
 </style>

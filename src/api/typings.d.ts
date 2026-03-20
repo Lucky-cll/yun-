@@ -217,7 +217,7 @@ declare namespace API {
 
   type getSpaceByIdUsingGETParams = {
     /** id */
-    id?: number
+    id?: string
   }
 
   type getSpaceVOByIdUsingGETParams = {

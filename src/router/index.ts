@@ -10,14 +10,6 @@ const router = createRouter({
       component: HomePage,
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
-    },
-    {
       path: '/user/login',
       name: '用户登录',
       component: () => import('@/Pages/user/UserLoginPage.vue'),
@@ -46,7 +38,28 @@ const router = createRouter({
       path:'/admin/pictureManage',
       name:'图片管理',
       component: () => import('@/Pages/admin/PictureManagePage.vue'),
-    }
+    },
+    {
+      path:'/picture/:id',
+      name:'图片详情',
+      component: () => import('@/Pages/PictureDetailPage.vue'),
+      props: true
+    },
+    {
+      path:'/add-picture/batch',
+      name:'批量上传图片',
+      component: () => import('@/Pages/addPictureBatchPage.vue'),
+    },
+    {
+      path:'/admin/spaceManage',
+      name:'空间管理',
+      component: () => import('@/Pages/admin/SpaceManagePage.vue'),
+    },
+    {
+      path:'/add-space',
+      name:'添加空间',
+      component: () => import('@/Pages/AddSpacePage.vue'),
+    },
   ],
 })
 

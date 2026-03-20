@@ -3,7 +3,15 @@
     <h2 style="margin-bottom: 16px">
       {{ route.query?.id ? '修改图片' : '创建图片' }}
     </h2>
-    <PictureUpdate :picture="picture" :onSuccess="onSuccess" />
+    <!-- 选择上传方式 -->
+    <a-tabs v-model:activeKey="uploadType">
+      <a-tab-pane key="file" tab="文件上传">
+        <PictureUpdate :picture="picture" :onSuccess="onSuccess" />
+      </a-tab-pane>
+      <a-tab-pane key="url" tab="URL 上传" force-render>
+        <PictureUrlUpload :picture="picture" :onSuccess="onSuccess" />
+      </a-tab-pane>
+    </a-tabs>
     <a-form
       v-if="picture"
       ref="formRef"
@@ -50,9 +58,14 @@
 
 <script lang="ts" setup>
 import PictureUpdate from '@/components/PictureUpdate.vue'
+import PictureUrlUpload from '@/components/PictureUrlUpload.vue'
 import { reactive, ref, onMounted } from 'vue'
 import { message } from 'ant-design-vue'
-import { editPictureUsingPost, listPictureTagCategoryUsingGet , getPictureVoByIdUsingGet} from '@/api/pictureController'
+import {
+  editPictureUsingPost,
+  listPictureTagCategoryUsingGet,
+  getPictureVoByIdUsingGet,
+} from '@/api/pictureController'
 import router from '@/router'
 import { useRoute } from 'vue-router'
 interface options {
@@ -65,6 +78,7 @@ const tagList = ref<options[]>([])
 const categoryList = ref<options[]>([])
 const formRef = ref<any>(null)
 const route = useRoute()
+const uploadType = ref<'file' | 'url'>('file')
 const onSuccess = (newPicture: API.PictureVO) => {
   picture.value = newPicture
   pictureForm.name = newPicture.name
@@ -81,8 +95,8 @@ const handleSubmit = async (values: any) => {
   })
   if (res.data.code === 0 && res.data.data) {
     message.success('图片创建成功')
-    formRef.value.resetFields()
-    picture.value = undefined
+    // formRef.value.resetFields()
+    // picture.value = undefined
     // 跳转到图片详情页
     router.push({
       path: `/picture/${pictureId}`,
@@ -110,10 +124,10 @@ const getTagCategoryList = async () => {
 // 获取老数据
 const getOldPicture = async () => {
   // 获取数据
-  const id = Number(route.query?.id)
+  const id = route.query?.id
   if (id) {
     const res = await getPictureVoByIdUsingGet({
-      id : id,
+      id: id as any,
     })
     if (res.data.code === 0 && res.data.data) {
       const data = res.data.data
