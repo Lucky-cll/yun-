@@ -24,32 +24,15 @@
         </a-checkable-tag>
       </a-space>
     </div>
-    <a-list
-      :grid="{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 5, xxl: 6 }"
-      :data-source="dataList"
-      :loading="loading"
-      :pagination="pagination"
-    >
-      <template #renderItem="{ item: picture }">
-        <a-list-item>
-          <a-card hoverable @click="doPictureClick(picture)">
-            <template #cover>
-              <img alt="picture.name" loading="lazy" :src="picture.thumbnailUrl??picture.url" style="height: 120px; object-fit: cover" />
-            </template>
-            <a-card-meta :title="picture.name">
-              <template #description>
-                <a-flex>
-                  <a-tag color="pink">{{ picture.category ?? '默认' }}</a-tag>
-                  <a-tag v-for="tag in picture.tags" :color="getTagColor(tag)" :key="tag">{{
-                    tag
-                  }}</a-tag>
-                </a-flex>
-              </template>
-            </a-card-meta>
-          </a-card>
-        </a-list-item>
-      </template>
-    </a-list>
+    <!-- 图片列表 -->
+    <PictureList :dataList="dataList" :loading="loading" />
+    <a-pagination
+      style="text-align: right"
+      v-model:current="searchParams.current"
+      v-model:pageSize="searchParams.pageSize"
+      :total="total"
+      @change="onPageChange"
+    />
   </div>
 </template>
 <script setup lang="ts">
@@ -58,16 +41,7 @@ import { listPictureVoByPageUsingPost } from '@/api/pictureController'
 import { message } from 'ant-design-vue'
 import { listPictureTagCategoryUsingGet } from '@/api/pictureController'
 import router from '@/router'
-const tagColors = ['blue', 'green', 'purple', 'cyan', 'magenta', 'orange', 'red', 'teal', 'gold']
-// 简单哈希函数：根据标签字符串计算出一个数字，再映射到颜色池索引
-const getTagColor = (tag: string) => {
-  let hash = 0
-  for (let i = 0; i < tag.length; i++) {
-    hash = tag.charCodeAt(i) + ((hash << 5) - hash)
-  }
-  const index = Math.abs(hash) % tagColors.length
-  return tagColors[index]
-}
+import PictureList from '@/components/PictureList.vue'
 const total = ref(0)
 const dataList = ref<API.PictureVO[]>([])
 const loading = ref(false)
@@ -82,18 +56,11 @@ const searchParams = reactive({
   sortOrder: 'descend',
   searchText: '',
 })
-const pagination = computed(() => {
-  return {
-    total: total.value,
-    current: searchParams.current,
-    pageSize: searchParams.pageSize,
-    onChange: (current: number, pageSize: number) => {
-      searchParams.current = current
-      searchParams.pageSize = pageSize
-      fetchData()
-    },
-  }
-})
+const onPageChange = (current: number, pageSize: number) => {
+  searchParams.current = current
+  searchParams.pageSize = pageSize
+  fetchData()
+}
 const fetchData = async () => {
   loading.value = true
   const params = {
@@ -132,14 +99,6 @@ const getTagCotegoryOptions = async () => {
   } else {
     message.error('获取标签分类失败：' + res.data.message)
   }
-}
-const doPictureClick = (picture: API.PictureVO) => {
-  router.push({
-    name: '图片详情',
-    params: {
-      id: picture.id,
-    },
-  })
 }
 onMounted(() => {
   getTagCotegoryOptions()

@@ -188,11 +188,11 @@ declare namespace API {
 
   type CreatePictureOutPaintingTaskRequest = {
     parameters?: Parameters
-    pictureId?: number
+    pictureId?: string | number // 修改：兼容字符串/数字
   }
 
   type DeleteRequest = {
-    id?: number
+    id?: string | number // 修改：兼容字符串/数字
   }
 
   type GetOutPaintingTaskResponse = {
@@ -202,7 +202,7 @@ declare namespace API {
 
   type getPictureByIdUsingGETParams = {
     /** id */
-    id?: number
+    id?: string | number // 修改：兼容字符串/数字
   }
 
   type getPictureOutPaintingTaskUsingGETParams = {
@@ -212,27 +212,27 @@ declare namespace API {
 
   type getPictureVOByIdUsingGETParams = {
     /** id */
-    id?: number
+    id?: string | number // 修改：兼容字符串/数字
   }
 
   type getSpaceByIdUsingGETParams = {
     /** id */
-    id?: string
+    id?: string | number // 修改：兼容字符串/数字
   }
 
   type getSpaceVOByIdUsingGETParams = {
     /** id */
-    id?: number
+    id?: string | number // 修改：兼容字符串/数字
   }
 
   type getUserByIdUsingGETParams = {
     /** id */
-    id?: number
+    id?: string | number // 修改：兼容字符串/数字
   }
 
   type getUserVOByIdUsingGETParams = {
     /** id */
-    id?: number
+    id?: string | number // 修改：兼容字符串/数字
   }
 
   type ImageSearchResult = {
@@ -243,7 +243,7 @@ declare namespace API {
   type LoginUserVO = {
     createTime?: string
     editTime?: string
-    id?: number
+    id?: string | number // 修改：兼容字符串/数字
     updateTime?: string
     userAccount?: string
     userAvatar?: string
@@ -393,7 +393,7 @@ declare namespace API {
     category?: string
     createTime?: string
     editTime?: string
-    id?: number
+    id?: string | number // 修改：兼容字符串/数字
     introduction?: string
     isDelete?: number
     name?: string
@@ -406,26 +406,26 @@ declare namespace API {
     reviewMessage?: string
     reviewStatus?: number
     reviewTime?: string
-    reviewerId?: number
-    spaceId?: number
+    reviewerId?: string | number // 修改：兼容字符串/数字
+    spaceId?: string | number // 修改：兼容字符串/数字
     tags?: string
     thumbnailUrl?: string
     updateTime?: string
     url?: string
-    userId?: number
+    userId?: string | number // 修改：兼容字符串/数字
   }
 
   type PictureEditByBatchRequest = {
     category?: string
     nameRule?: string
-    pictureIdList?: number[]
-    spaceId?: number
+    pictureIdList?: (string | number)[] // 修改：数组元素兼容字符串/数字
+    spaceId?: string | number // 修改：兼容字符串/数字
     tags?: string[]
   }
 
   type PictureEditRequest = {
     category?: string
-    id?: number
+    id?: string | number // 修改：兼容字符串/数字
     introduction?: string
     name?: string
     tags?: string[]
@@ -435,7 +435,7 @@ declare namespace API {
     category?: string
     current?: number
     endEditTime?: string
-    id?: number
+    id?: string | number // 修改：兼容字符串/数字
     introduction?: string
     name?: string
     nullSpaceId?: boolean
@@ -448,18 +448,18 @@ declare namespace API {
     reviewMessage?: string
     reviewStatus?: number
     reviewTime?: string
-    reviewerId?: number
+    reviewerId?: string | number // 修改：兼容字符串/数字
     searchText?: string
     sortField?: string
     sortOrder?: string
-    spaceId?: number
+    spaceId?: string | number // 修改：兼容字符串/数字
     startEditTime?: string
     tags?: string[]
-    userId?: number
+    userId?: string | number // 修改：兼容字符串/数字
   }
 
   type PictureReviewRequest = {
-    id?: number
+    id?: string | number // 修改：兼容字符串/数字
     reviewMessage?: string
     reviewStatus?: number
   }
@@ -471,7 +471,7 @@ declare namespace API {
 
   type PictureUpdateRequest = {
     category?: string
-    id?: number
+    id?: string | number // 修改：兼容字符串/数字
     introduction?: string
     name?: string
     tags?: string[]
@@ -485,16 +485,16 @@ declare namespace API {
 
   type PictureUploadRequest = {
     fileUrl?: string
-    id?: number
+    id?: string | number // 修改：兼容字符串/数字
     picName?: string
-    spaceId?: number
+    spaceId?: string | number // 修改：兼容字符串/数字
   }
 
   type PictureVO = {
     category?: string
     createTime?: string
     editTime?: string
-    id?: number
+    id?: string | number // 修改：兼容字符串/数字
     introduction?: string
     name?: string
     permissionList?: string[]
@@ -504,28 +504,28 @@ declare namespace API {
     picScale?: number
     picSize?: number
     picWidth?: number
-    spaceId?: number
+    spaceId?: string | number // 修改：兼容字符串/数字
     tags?: string[]
     thumbnailUrl?: string
     updateTime?: string
     url?: string
     user?: UserVO
-    userId?: number
+    userId?: string | number // 修改：兼容字符串/数字
   }
 
   type SearchPictureByColorRequest = {
     picColor?: string
-    spaceId?: number
+    spaceId?: string | number // 修改：兼容字符串/数字
   }
 
   type SearchPictureByPictureRequest = {
-    pictureId?: number
+    pictureId?: string | number // 修改：兼容字符串/数字
   }
 
   type Space = {
     createTime?: string
     editTime?: string
-    id?: number
+    id?: string | number // 修改：兼容字符串/数字
     isDelete?: number
     maxCount?: number
     maxSize?: number
@@ -535,7 +535,7 @@ declare namespace API {
     totalCount?: number
     totalSize?: number
     updateTime?: string
-    userId?: number
+    userId?: string | number // 修改：兼容字符串/数字
   }
 
   type SpaceAddRequest = {
@@ -547,7 +547,7 @@ declare namespace API {
   type SpaceCategoryAnalyzeRequest = {
     queryAll?: boolean
     queryPublic?: boolean
-    spaceId?: number
+    spaceId?: string | number // 修改：兼容字符串/数字
   }
 
   type SpaceCategoryAnalyzeResponse = {
@@ -557,7 +557,7 @@ declare namespace API {
   }
 
   type SpaceEditRequest = {
-    id?: number
+    id?: string | number // 修改：兼容字符串/数字
     spaceName?: string
   }
 
@@ -570,14 +570,14 @@ declare namespace API {
 
   type SpaceQueryRequest = {
     current?: number
-    id?: number
+    id?: string | number // 修改：兼容字符串/数字
     pageSize?: number
     sortField?: string
     sortOrder?: string
     spaceLevel?: number
     spaceName?: string
     spaceType?: number
-    userId?: number
+    userId?: string | number // 修改：兼容字符串/数字
   }
 
   type SpaceRankAnalyzeRequest = {
@@ -587,7 +587,7 @@ declare namespace API {
   type SpaceSizeAnalyzeRequest = {
     queryAll?: boolean
     queryPublic?: boolean
-    spaceId?: number
+    spaceId?: string | number // 修改：兼容字符串/数字
   }
 
   type SpaceSizeAnalyzeResponse = {
@@ -598,7 +598,7 @@ declare namespace API {
   type SpaceTagAnalyzeRequest = {
     queryAll?: boolean
     queryPublic?: boolean
-    spaceId?: number
+    spaceId?: string | number // 修改：兼容字符串/数字
   }
 
   type SpaceTagAnalyzeResponse = {
@@ -607,7 +607,7 @@ declare namespace API {
   }
 
   type SpaceUpdateRequest = {
-    id?: number
+    id?: string | number // 修改：兼容字符串/数字
     maxCount?: number
     maxSize?: number
     spaceLevel?: number
@@ -617,7 +617,7 @@ declare namespace API {
   type SpaceUsageAnalyzeRequest = {
     queryAll?: boolean
     queryPublic?: boolean
-    spaceId?: number
+    spaceId?: string | number // 修改：兼容字符串/数字
   }
 
   type SpaceUsageAnalyzeResponse = {
@@ -631,25 +631,25 @@ declare namespace API {
 
   type SpaceUser = {
     createTime?: string
-    id?: number
-    spaceId?: number
+    id?: string | number // 修改：兼容字符串/数字
+    spaceId?: string | number // 修改：兼容字符串/数字
     spaceRole?: string
     updateTime?: string
-    userId?: number
+    userId?: string | number // 修改：兼容字符串/数字
   }
 
   type SpaceUserAddRequest = {
-    spaceId?: number
+    spaceId?: string | number // 修改：兼容字符串/数字
     spaceRole?: string
-    userId?: number
+    userId?: string | number // 修改：兼容字符串/数字
   }
 
   type SpaceUserAnalyzeRequest = {
     queryAll?: boolean
     queryPublic?: boolean
-    spaceId?: number
+    spaceId?: string | number // 修改：兼容字符串/数字
     timeDimension?: string
-    userId?: number
+    userId?: string | number // 修改：兼容字符串/数字
   }
 
   type SpaceUserAnalyzeResponse = {
@@ -658,32 +658,32 @@ declare namespace API {
   }
 
   type SpaceUserEditRequest = {
-    id?: number
+    id?: string | number // 修改：兼容字符串/数字
     spaceRole?: string
   }
 
   type SpaceUserQueryRequest = {
-    id?: number
-    spaceId?: number
+    id?: string | number // 修改：兼容字符串/数字
+    spaceId?: string | number // 修改：兼容字符串/数字
     spaceRole?: string
-    userId?: number
+    userId?: string | number // 修改：兼容字符串/数字
   }
 
   type SpaceUserVO = {
     createTime?: string
-    id?: number
+    id?: string | number // 修改：兼容字符串/数字
     space?: SpaceVO
-    spaceId?: number
+    spaceId?: string | number // 修改：兼容字符串/数字
     spaceRole?: string
     updateTime?: string
     user?: UserVO
-    userId?: number
+    userId?: string | number // 修改：兼容字符串/数字
   }
 
   type SpaceVO = {
     createTime?: string
     editTime?: string
-    id?: number
+    id?: string | number // 修改：兼容字符串/数字
     maxCount?: number
     maxSize?: number
     permissionList?: string[]
@@ -694,7 +694,7 @@ declare namespace API {
     totalSize?: number
     updateTime?: string
     user?: UserVO
-    userId?: number
+    userId?: string | number // 修改：兼容字符串/数字
   }
 
   type TaskMetrics = {
@@ -710,15 +710,15 @@ declare namespace API {
 
   type uploadPictureUsingPOSTParams = {
     fileUrl?: string
-    id?: number
+    id?: string | number // 修改：兼容字符串/数字
     picName?: string
-    spaceId?: number
+    spaceId?: string | number // 修改：兼容字符串/数字
   }
 
   type User = {
     createTime?: string
     editTime?: string
-    id?: number
+    id?: string | number // 修改：兼容字符串/数字
     isDelete?: number
     updateTime?: string
     userAccount?: string
@@ -747,7 +747,7 @@ declare namespace API {
 
   type UserQueryRequest = {
     current?: number
-    id?: number
+    id?: string | number // 修改：兼容字符串/数字
     pageSize?: number
     sortField?: string
     sortOrder?: string
@@ -764,7 +764,7 @@ declare namespace API {
   }
 
   type UserUpdateRequest = {
-    id?: number
+    id?: string | number // 修改：兼容字符串/数字
     userAvatar?: string
     userName?: string
     userProfile?: string
@@ -773,7 +773,7 @@ declare namespace API {
 
   type UserVO = {
     createTime?: string
-    id?: number
+    id?: string | number // 修改：兼容字符串/数字
     userAccount?: string
     userAvatar?: string
     userName?: string

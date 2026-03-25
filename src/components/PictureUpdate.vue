@@ -2,7 +2,6 @@
   <div class="pictureupload">
     <a-upload
       list-type="picture-card"
-
       :show-upload-list="false"
       :customRequest="handleUpload"
       :before-upload="beforeUpload"
@@ -24,6 +23,7 @@ import type { UploadChangeParam, UploadProps } from 'ant-design-vue'
 import { uploadPictureUsingPost } from '@/api/pictureController'
 interface Props {
   picture?: API.PictureVO
+  spaceId?: number | string
   onSuccess?: (newPicture: API.PictureVO) => void
 }
 const props = defineProps<Props>()
@@ -31,20 +31,21 @@ const props = defineProps<Props>()
 const fileList = ref([])
 const loading = ref<boolean>(false)
 const imageUrl = ref<string>('')
-const handleUpload = async({file}: any ) => {
+const handleUpload = async ({ file }: any) => {
   loading.value = true
-  try{
-    const params = props.picture? {id: props.picture.id} :{};
-    const res = await uploadPictureUsingPost( params ,{}, file);
-    if(res.data.code === 0 && res.data.data){
+  try {
+    const params: API.PictureUploadRequest = props.picture ? { id: props.picture.id } : {}
+    params.spaceId = props.spaceId
+    const res = await uploadPictureUsingPost(params, {}, file)
+    if (res.data.code === 0 && res.data.data) {
       message.success('图片上传成功')
       props.onSuccess?.(res.data.data)
-    }else{
+    } else {
       message.error('图片上传失败：' + res.data.message)
     }
-  }catch(error) {
+  } catch (error) {
     message.error('图片上传失败')
-  }finally{
+  } finally {
     loading.value = false
   }
 }
@@ -62,13 +63,12 @@ const beforeUpload = (file: UploadProps['fileList'][number]) => {
 }
 </script>
 <style scoped>
-.pictureupload :deep(.ant-upload){
-  background-color: rgb(213, 229, 224);
+.pictureupload :deep(.ant-upload) {
+  background-color: rgba(105, 220, 226, 0.3);
   width: 100% !important;
   height: 100% !important;
   min-width: 152px;
   min-height: 152px;
-
 }
 .avatar-uploader > .ant-upload {
   width: 128px;
@@ -83,7 +83,7 @@ const beforeUpload = (file: UploadProps['fileList'][number]) => {
   margin-top: 8px;
   color: #666;
 }
-.pictureupload img{
+.pictureupload img {
   max-width: 100%;
   max-height: 480px;
 }

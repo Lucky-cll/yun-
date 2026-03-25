@@ -58,7 +58,7 @@
           <a-image :src="record.url" :preview-src-list="[record.url]" :width="120" />
         </template>
         <template v-else-if="column.dataIndex === 'tags'">
-          <a-space>
+          <a-space wrap>
             <a-tag
               v-for="tag in JSON.parse(record.tags || '[]')"
               :key="tag"
@@ -176,6 +176,7 @@ const columns = [
   {
     title: '标签',
     dataIndex: 'tags',
+    ellipsis: true,
   },
   {
     title: '审核信息',
@@ -235,6 +236,7 @@ const pagination = computed(() => {
 const fetchDataList = async () => {
   const res = await listPictureByPageUsingPost({
     ...searchParams,
+    nullSpaceId: true,
   })
   if (res.data.code === 0 && res.data.data) {
     dataList.value = res.data.data.records ?? []

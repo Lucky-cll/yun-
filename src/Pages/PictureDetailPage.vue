@@ -47,7 +47,22 @@
             <a-descriptions-item label="大小">
               {{ formatSize(picture.picSize) }}
             </a-descriptions-item>
+            <a-descriptions-item label="主色调">
+              <a-space>
+                {{ picture.picColor ?? '-' }}
+                <div
+                  v-if="picture.picColor"
+                  :style="{
+                    backgroundColor: toHexColor(picture.picColor),
+                    width: '16px',
+                    height: '16px',
+                    borderRadius: '4px',
+                  }"
+                ></div>
+              </a-space>
+            </a-descriptions-item>
           </a-descriptions>
+          <ShareModal ref="shareModal" :link="shareLink" />
           <a-space wrap>
             <a-button v-if="canEdit" type="default" @click="doEdit">
               编辑
@@ -67,6 +82,12 @@
                 <DownloadOutlined />
               </template>
             </a-button>
+            <a-button type="primary" ghost @click="(e: MouseEvent)=>doShare(picture, e)">
+              分享
+              <template #icon>
+                <share-alt-outlined />
+              </template>
+            </a-button>
           </a-space>
         </a-card>
       </a-col>
@@ -80,10 +101,11 @@ import { getPictureVoByIdUsingGet } from '@/api/pictureController'
 import { message } from 'ant-design-vue'
 import { formatSize } from '@/utils'
 import { useLoginUserStore } from '@/stores/useLoginUserStore'
-import { DeleteOutlined, EditOutlined, DownloadOutlined } from '@ant-design/icons-vue'
+import { DeleteOutlined, EditOutlined, DownloadOutlined, ShareAltOutlined } from '@ant-design/icons-vue'
 import { deletePictureUsingPost } from '@/api/pictureController'
 import router from '@/router'
-import { downloadImage } from '@/utils'
+import ShareModal from '@/components/ShareModal.vue'
+import { downloadImage, toHexColor } from '@/utils'
 interface props {
   id: string
 }
@@ -91,6 +113,9 @@ const props = defineProps<props>()
 const picture = ref<API.PictureVO>({})
 const loginUserStore = useLoginUserStore()
 const loading = ref(true)
+const shareLink = ref<string>()
+const shareModal = ref()
+
 const canEdit = computed(() => {
   const loginUser = loginUserStore.loginUser
   if (!loginUser.id) {
@@ -99,9 +124,23 @@ const canEdit = computed(() => {
   const user = picture.value.user ?? {}
   return loginUser.id === user.id || loginUser.userRole === 'admin'
 })
+// 分享
+const doShare = (picture: API.PictureVO, e: MouseEvent) => {
+  e.stopPropagation()
+  shareLink.value = window.location.protocol + '//' + window.location.host + '/picture/' + picture.id
+  if(shareModal.value) {
+    shareModal.value.openModal()
+  }
+}
 // 编辑
 const doEdit = () => {
-  router.push('/add-picture?id=' + picture.value.id)
+  router.push({
+    path: '/add-picture',
+    query: {
+      id: picture.value.id,
+      spaceId: picture.value.spaceId,
+    },
+  })
 }
 // 删除
 const doDelete = async () => {

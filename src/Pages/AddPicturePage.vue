@@ -3,15 +3,28 @@
     <h2 style="margin-bottom: 16px">
       {{ route.query?.id ? '修改图片' : '创建图片' }}
     </h2>
+    <a-typography-paragraph type="secondary" v-if="spaceId">
+      保存至空间<a :href="`/space/${spaceId}`">{{ spaceId }}</a>
+    </a-typography-paragraph>
     <!-- 选择上传方式 -->
     <a-tabs v-model:activeKey="uploadType">
       <a-tab-pane key="file" tab="文件上传">
-        <PictureUpdate :picture="picture" :onSuccess="onSuccess" />
+        <PictureUpdate :picture="picture" :onSuccess="onSuccess" :spaceId="spaceId" />
       </a-tab-pane>
       <a-tab-pane key="url" tab="URL 上传" force-render>
-        <PictureUrlUpload :picture="picture" :onSuccess="onSuccess" />
+        <PictureUrlUpload :picture="picture" :onSuccess="onSuccess" :spaceId="spaceId" />
       </a-tab-pane>
     </a-tabs>
+    <div v-if="picture" class="edit-bar">
+      <a-button :icon="h(EditOutlined)" @click="doEditPicture">编辑图片</a-button>
+      <ImageCropperModel
+        ref="imageCropperRef"
+        imageUrl="https://avatars2.githubusercontent.com/u/15681693?s=460&v=4"
+        :picture="picture"
+        :spaceId="spaceId"
+        :onSuccess="onCropSuccess"
+      />
+    </div>
     <a-form
       v-if="picture"
       ref="formRef"
@@ -50,7 +63,7 @@
         />
       </a-form-item>
       <a-form-item>
-        <a-button type="primary" html-type="submit" style="width: 100%">创建</a-button>
+        <a-button type="primary" html-type="submit" style="width: 100%">提交</a-button>
       </a-form-item>
     </a-form>
   </div>
@@ -59,13 +72,15 @@
 <script lang="ts" setup>
 import PictureUpdate from '@/components/PictureUpdate.vue'
 import PictureUrlUpload from '@/components/PictureUrlUpload.vue'
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref, onMounted, h, computed } from 'vue'
 import { message } from 'ant-design-vue'
+import { EditOutlined } from '@ant-design/icons-vue'
 import {
   editPictureUsingPost,
   listPictureTagCategoryUsingGet,
   getPictureVoByIdUsingGet,
 } from '@/api/pictureController'
+import ImageCropperModel from '@/components/ImageCropperModel.vue'
 import router from '@/router'
 import { useRoute } from 'vue-router'
 interface options {
@@ -76,9 +91,18 @@ const picture = ref<API.PictureVO>()
 const pictureForm = reactive<API.PictureEditRequest>({})
 const tagList = ref<options[]>([])
 const categoryList = ref<options[]>([])
-const formRef = ref<any>(null)
 const route = useRoute()
 const uploadType = ref<'file' | 'url'>('file')
+const spaceId = computed(() => route.query?.spaceId as number | string)
+const imageCropperRef = ref()
+const doEditPicture = () => {
+  if(imageCropperRef.value) {
+    imageCropperRef.value.openModal()
+  }
+}
+const onCropSuccess = (newPicture: API.PictureVO) => {
+  picture.value = newPicture
+}
 const onSuccess = (newPicture: API.PictureVO) => {
   picture.value = newPicture
   pictureForm.name = newPicture.name
@@ -91,6 +115,7 @@ const handleSubmit = async (values: any) => {
   }
   const res = await editPictureUsingPost({
     id: pictureId,
+    spaceId: spaceId.value,
     ...values,
   })
   if (res.data.code === 0 && res.data.data) {
@@ -154,5 +179,9 @@ h2 {
   font-size: 24px;
   color: #333;
   text-align: center;
+}
+.edit-bar {
+  width:100px;
+  margin: 10px auto;
 }
 </style>
