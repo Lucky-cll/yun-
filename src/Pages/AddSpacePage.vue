@@ -1,6 +1,8 @@
 <template>
   <div class="addSpacePage">
-    <h2 style="margin-bottom: 16px">{{ route.query?.id ? '编辑空间' : '创建空间' }}</h2>
+    <h2 style="margin-bottom: 16px">
+      {{ route.query?.id ? '编辑空间' : '创建空间' }}{{ SPACE_TYPE_MAP[spaceType] }}
+    </h2>
     <a-form layout="vertical" :model="formData" @finish="handleSubmit">
       <a-form-item label="空间名称" name="name">
         <a-input v-model:value="formData.spaceName" placeholder="请输入空间名称" />
@@ -36,20 +38,40 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref, onMounted, computed } from 'vue'
 import { message } from 'ant-design-vue'
 import router from '@/router'
-import { addSpaceUsingPost, listSpaceLevelUsingGet, getSpaceByIdUsingGet, updateSpaceUsingPost } from '@/api/spaceController'
-import { SPACE_LEVEL_ENUM, SPACE_LEVEL_OPTIONS } from '@/constants/space'
+import {
+  addSpaceUsingPost,
+  listSpaceLevelUsingGet,
+  getSpaceByIdUsingGet,
+  updateSpaceUsingPost,
+} from '@/api/spaceController'
+import {
+  SPACE_LEVEL_ENUM,
+  SPACE_LEVEL_OPTIONS,
+  SPACE_TYPE_ENUM,
+  SPACE_TYPE_MAP,
+  SPACE_TYPE_OPTIONS,
+  SPACE_PERMISSION_ENUM,
+} from '@/constants/space'
 import { formatSize } from '@/utils'
 import { useRoute } from 'vue-router'
+const route = useRoute()
 const loading = ref(false)
+const oldSpace = ref<API.SpaceVO>()
+const spaceType = computed(() => {
+  if (route.query.type) {
+    return Number(route.query.type as string)
+  }
+  return SPACE_TYPE_ENUM.PRIVATE
+})
 const formData = reactive<API.SpaceAddRequest>({
   spaceName: '',
   spaceLevel: SPACE_LEVEL_ENUM.COMMON,
+  spaceType: spaceType.value,
 })
-const oldSpace = ref<API.SpaceVO>()
-  const route = useRoute()
+
 const getOldSpace = async () => {
   if (route.query.id) {
     const res = await getSpaceByIdUsingGet({
@@ -119,7 +141,7 @@ h2 {
 .space-level-card {
   margin-top: 20px; /* 和表单拉开距离，不挤 */
   border-radius: 8px !important; /* 圆角更柔和，不生硬 */
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important; /* 轻微阴影，提升层次感 */
+  box-shadow: 0 2px 6px rgba(162, 136, 136, 0.04) !important; /* 轻微阴影，提升层次感 */
   padding: 0 16px 16px !important; /* 内边距优化，内容不贴边 */
 }
 

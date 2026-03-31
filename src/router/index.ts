@@ -67,10 +67,21 @@ const router = createRouter({
           props: true,
         },
         {
-          path: '/search-picture',
+          path: 'search-picture',
           name: '图片搜索',
           component: () => import('@/Pages/SearchPicturePage.vue'),
         },
+        {
+          path: 'space-analyze',
+          name: '空间分析',
+          component: () => import('@/Pages/SpaceAnalyzePage.vue'),
+        },
+        {
+          path:'spaceUserManage/:id',
+          name:'空间成员管理',
+          component: () => import('@/Pages/SpaceUserManagePage.vue'),
+          props: true,
+        }
       ],
     },
     // 不需要基础布局的页面
@@ -95,6 +106,11 @@ const router = createRouter({
       path: '/:pathMatch(.*)*',
       redirect: '/404',
     },
+    {
+      path: '/test',
+      name: '测试',
+      component: () => import('@/Pages/test.vue'),
+    }
   ],
 })
 

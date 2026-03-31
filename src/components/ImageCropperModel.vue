@@ -8,22 +8,39 @@
   >
     <vue-cropper
       ref="cropperRef"
-      :img="imageUrl"
+      :img="props.imageUrl"
       :autoCrop="true"
       :fixedBox="false"
       :centerBox="true"
       :canMoveBox="true"
       :info="true"
       outputType="png"
+      :fixed="aspectRatio !== 'free'"
+      :fixedNumber="currentAspectRatio"
     />
-    <div style="margin-bottom: 16px" />
+    <div style="margin-bottom: 16px"></div>
+    <!-- 比例选择 -->
+    <div class="aspect-ratio-selector">
+      <a-radio-group v-model:value="aspectRatio" button-style="solid">
+        <a-radio-button value="free">自由比例</a-radio-button>
+        <a-radio-button value="1:1">1:1</a-radio-button>
+        <a-radio-button value="4:3">4:3</a-radio-button>
+        <a-radio-button value="16:9">16:9</a-radio-button>
+        <a-radio-button value="3:4">3:4</a-radio-button>
+        <a-radio-button value="9:16">9:16</a-radio-button>
+      </a-radio-group>
+    </div>
+
+    <div style="margin-bottom: 16px"></div>
     <!-- 图片操作 -->
+
     <div class="image-cropper-actions">
       <a-space>
         <a-button @click="rotateLeft">向左旋转</a-button>
         <a-button @click="rotateRight">向右旋转</a-button>
         <a-button @click="changeScale(1)">放大</a-button>
         <a-button @click="changeScale(-1)">缩小</a-button>
+        <a-button type="primary" :loading="loading" @click="handleConfirm">确认</a-button>
       </a-space>
     </div>
   </a-modal>
@@ -31,10 +48,16 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import VueCropper from 'vue-cropper';
+import { VueCropper } from 'vue-cropper'
 import 'vue-cropper/dist/index.css'
+import { message } from 'ant-design-vue'
+import { uploadPictureUsingPost } from '@/api/pictureController'
+import { computed } from 'vue'
 interface Props {
   imageUrl?: string
+  picture?: API.PictureVO
+  spaceId?: string | number
+  onSuccess?: (newPicture: any) => void
 }
 
 const props = defineProps<Props>()
@@ -68,12 +91,56 @@ const openModal = () => {
 const closeModal = () => {
   visible.value = false
 }
+const loading = ref<boolean>(false)
+
+// 确认裁剪
+const handleConfirm = () => {
+  cropperRef.value.getCropBlob((blob: Blob) => {
+    const fileName = (props.picture?.name || 'image') + '.png'
+    const file = new File([blob], fileName, { type: blob.type })
+    // 上传图片
+    handleUpload({ file })
+  })
+}
+
+const aspectRatio = ref('free')
+
+const currentAspectRatio = computed(() => {
+  if (aspectRatio.value === 'free') return [0, 0]
+  const [width, height] = aspectRatio.value.split(':').map(Number)
+  return [width, height]
+})
+
+/**
+ * 上传
+ * @param file
+ */
+const handleUpload = async ({ file }: any) => {
+  loading.value = true
+  try {
+    const params: API.PictureUploadRequest = props.picture ? { id: props.picture.id } : {}
+    params.spaceId = props.spaceId
+    const ress = await uploadPictureUsingPost(params, {}, file)
+    const res: API.BaseResponsePictureVO_ = ress.data as API.BaseResponsePictureVO_
+    if (res.code === 0 && res.data) {
+      message.success('图片上传成功')
+      // 将上传成功的图片信息传递给父组件
+      props.onSuccess?.(res.data)
+      closeModal()
+    } else {
+      message.error('图片上传失败，' + res.message)
+    }
+  } catch (error) {
+    message.error('图片上传失败')
+  } finally {
+    loading.value = false
+  }
+}
 
 // 暴露函数给父组件
 defineExpose({
   openModal,
 })
-
 </script>
 
 <style scoped>
@@ -83,5 +150,33 @@ defineExpose({
 
 .image-cropper .vue-cropper {
   height: 400px;
+}
+.image-cropper-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* 给裁剪区域增加质感 */
+.cropper-wrapper {
+  height: 400px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #f0f0f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.aspect-ratio-selector {
+  display: flex;
+  justify-content: center;
+  padding: 8px;
+  background: #fafafa;
+  border-radius: 8px;
+}
+
+.image-cropper-actions {
+  display: flex;
+  justify-content: center;
+  padding-top: 8px;
 }
 </style>

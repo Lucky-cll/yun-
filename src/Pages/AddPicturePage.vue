@@ -16,10 +16,31 @@
       </a-tab-pane>
     </a-tabs>
     <div v-if="picture" class="edit-bar">
-      <a-button :icon="h(EditOutlined)" @click="doEditPicture">编辑图片</a-button>
+      <!-- <a-space size="middle">
+        <a-button :icon="h(EditOutlined)" @click="doEditPicture">编辑图片</a-button>
+        <a-button type="primary" ghost :icon="h(FullscreenOutlined)" @click="doImagePainting">
+          AI 扩图
+        </a-button>
+      </a-space> -->
+      <a-row justify="center">
+        <a-space size="middle">
+          <a-button :icon="h(EditOutlined)" @click="doEditPicture">编辑图片</a-button>
+          <a-button type="primary" ghost :icon="h(FullscreenOutlined)" @click="doImagePainting">
+            AI 扩图
+          </a-button>
+        </a-space>
+      </a-row>
+
+      <ImageOutAIModal
+        ref="imageOutPaintingRef"
+        :picture="picture"
+        :spaceId="spaceId"
+        :onSuccess="onImageOutPaintingSuccess"
+      />
+
       <ImageCropperModel
         ref="imageCropperRef"
-        imageUrl="https://avatars2.githubusercontent.com/u/15681693?s=460&v=4"
+        :imageUrl="picture?.url"
         :picture="picture"
         :spaceId="spaceId"
         :onSuccess="onCropSuccess"
@@ -74,13 +95,14 @@ import PictureUpdate from '@/components/PictureUpdate.vue'
 import PictureUrlUpload from '@/components/PictureUrlUpload.vue'
 import { reactive, ref, onMounted, h, computed } from 'vue'
 import { message } from 'ant-design-vue'
-import { EditOutlined } from '@ant-design/icons-vue'
+import { EditOutlined, FullscreenOutlined } from '@ant-design/icons-vue'
 import {
   editPictureUsingPost,
   listPictureTagCategoryUsingGet,
   getPictureVoByIdUsingGet,
 } from '@/api/pictureController'
 import ImageCropperModel from '@/components/ImageCropperModel.vue'
+import ImageOutAIModal from '@/components/ImageOutAIModal.vue'
 import router from '@/router'
 import { useRoute } from 'vue-router'
 interface options {
@@ -95,12 +117,21 @@ const route = useRoute()
 const uploadType = ref<'file' | 'url'>('file')
 const spaceId = computed(() => route.query?.spaceId as number | string)
 const imageCropperRef = ref()
+const imageOutPaintingRef = ref()
 const doEditPicture = () => {
-  if(imageCropperRef.value) {
+  if (imageCropperRef.value) {
     imageCropperRef.value.openModal()
   }
 }
+const doImagePainting = () => {
+  if (imageOutPaintingRef.value) {
+    imageOutPaintingRef.value.openModal()
+  }
+}
 const onCropSuccess = (newPicture: API.PictureVO) => {
+  picture.value = newPicture
+}
+const onImageOutPaintingSuccess = (newPicture: API.PictureVO) => {
   picture.value = newPicture
 }
 const onSuccess = (newPicture: API.PictureVO) => {
@@ -181,7 +212,7 @@ h2 {
   text-align: center;
 }
 .edit-bar {
-  width:100px;
+  width: 100px;
   margin: 10px auto;
 }
 </style>

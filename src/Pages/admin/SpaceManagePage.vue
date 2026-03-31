@@ -2,7 +2,17 @@
   <div class="spaceManagePage">
     <a-flex justify="space-between">
       <h1>空间管理</h1>
-      <a-button :icon="h(PlusOutlined)" type="primary" href="/add-space">创建空间</a-button>
+      <a-space>
+        <a-space>
+          <a-button type="primary" href="/add-space" target="_blank">+ 创建空间</a-button>
+          <a-button type="primary" ghost href="/space-analyze?queryPublic=1" target="_blank">
+            分析公共图库
+          </a-button>
+          <a-button type="primary" ghost href="/space-analyze?queryAll=1" target="_blank">
+            分析全空间
+          </a-button>
+        </a-space>
+      </a-space>
     </a-flex>
     <a-form style="margin-bottom: 10px" layout="inline" :model="searchParams" @finish="doFinish">
       <a-form-item label="空间名称" name="spaceName">
@@ -22,6 +32,16 @@
         <a-input v-model:value="searchParams.userId" placeholder="请输入用户id" allowClear>
         </a-input>
       </a-form-item>
+      <a-form-item label="空间类别" name="spaceType">
+        <a-select
+          v-model:value="searchParams.spaceType"
+          :options="SPACE_TYPE_OPTIONS"
+          placeholder="请输入空间类别"
+          style="min-width: 180px"
+          allow-clear
+        />
+      </a-form-item>
+
       <a-form-item>
         <a-button type="primary" html-type="submit"> 查询 </a-button>
       </a-form-item>
@@ -42,6 +62,10 @@
           <div>大小：{{ formatSize(record.totalSize) }}/{{ formatSize(record.maxSize) }}</div>
           <div>图片数量：{{ record.totalCount }}/{{ record.maxCount }}</div>
         </template>
+        <!-- 空间类别 -->
+        <template v-if="column.dataIndex === 'spaceType'">
+          <a-tag>{{ SPACE_TYPE_MAP[record.spaceType] }}</a-tag>
+        </template>
 
         <template v-else-if="column.dataIndex === 'createTime'">
           {{ dayjs(record.createTime).format('YYYY-MM-DD HH:mm:ss') }}
@@ -55,6 +79,9 @@
             <a-button danger type="link" size="small" @click="handleDelete(record.id)"
               >删除</a-button
             >
+            <a-button type="link" :href="`/space-analyze?spaceId=${record.id}`" target="_blank"
+              >分析</a-button
+            >
           </a-space>
         </template>
       </template>
@@ -67,7 +94,7 @@ import { PlusOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { listSpaceByPageUsingPost, deleteSpaceUsingPost } from '@/api/spaceController'
 import zhCN from 'ant-design-vue/es/locale/zh_CN'
-import { SPACE_LEVEL_ENUM, SPACE_LEVEL_MAP, SPACE_LEVEL_OPTIONS } from '@/constants/space'
+import { SPACE_LEVEL_MAP, SPACE_LEVEL_OPTIONS, SPACE_TYPE_MAP , SPACE_TYPE_OPTIONS} from '@/constants/space.ts'
 import dayjs from 'dayjs'
 import { formatSize } from '@/utils/index.ts'
 const columns = [
@@ -84,6 +111,11 @@ const columns = [
     title: '空间级别',
     dataIndex: 'spaceLevel',
   },
+  {
+    title: '空间类别',
+    dataIndex: 'spaceType',
+  },
+
   {
     title: '使用情况',
     dataIndex: 'spaceUseInfo',

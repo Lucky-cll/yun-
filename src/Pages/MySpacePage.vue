@@ -20,6 +20,7 @@ const checkUSerSpace = async () => {
   const res = await listSpaceVoByPageUsingPost({
     current: 1,
     pageSize: 1,
+    spaceType: 0,
     userId: loginUser.id,
   })
   if(res.data.code === 0){

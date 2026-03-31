@@ -53,7 +53,7 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
 import { useLoginUserStore } from '@/stores/useLoginUserStore'
-import { getUserByIdUsingGet, updateUserUsingPost, userLogoutUsingPost } from '@/api/userController'
+import { updateUserUsingPost, userLogoutUsingPost } from '@/api/userController'
 
 const router = useRouter()
 const userStore = useLoginUserStore()
@@ -92,24 +92,19 @@ const fetchUserInfo = async () => {
   }
 
   try {
-    // 根据当前登录用户ID查询详情 - 使用正确的GET接口
-    const res = await getUserByIdUsingGet({ id: userStore.loginUser.id })
-    if (res.data.code === 0 && res.data.data) {
-      const userInfo = res.data.data
-      // 回显用户信息
-      Object.assign(userForm, {
-        id: userInfo.id,
-        userAccount: userInfo.userAccount,
-        userName: userInfo.userName,
-        userAvatar: userInfo.userAvatar || '',
-        userProfile: userInfo.userProfile || '',
-        userRole: userInfo.userRole || '',
-        createTime: userInfo.createTime || '',
-        updateTime: userInfo.updateTime || ''
-      })
-    } else {
-      message.error('获取个人信息失败：' + res.data.message)
-    }
+    // 从全局状态管理中获取用户信息
+    const userInfo = userStore.loginUser
+    // 回显用户信息
+    Object.assign(userForm, {
+      id: userInfo.id,
+      userAccount: userInfo.userAccount || '',
+      userName: userInfo.userName || '',
+      userAvatar: userInfo.userAvatar || '',
+      userProfile: userInfo.userProfile || '',
+      userRole: userInfo.userRole || '',
+      createTime: userInfo.createTime || '',
+      updateTime: userInfo.updateTime || ''
+    })
   } catch (err: any) {
     console.error('获取个人信息失败', err)
     message.error(err.message || '获取个人信息失败：网络异常')
@@ -158,7 +153,10 @@ const saveUserInfo = async () => {
 }
 
 
-onMounted(() => {
+onMounted(async () => {
+  // 先获取最新的用户信息
+  await userStore.fetchLoginUser()
+  // 然后更新表单
   fetchUserInfo()
 })
 </script>

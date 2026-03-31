@@ -31,6 +31,7 @@
       v-model:current="searchParams.current"
       v-model:pageSize="searchParams.pageSize"
       :total="total"
+      :showSizeChanger="false"
       @change="onPageChange"
     />
   </div>

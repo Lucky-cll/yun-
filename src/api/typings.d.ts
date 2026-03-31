@@ -330,9 +330,23 @@ declare namespace API {
     viewName?: string
   }
 
+  type TaskMetrics = {
+    total?: number
+    succeeded?: number
+    failed?: number
+  }
+
+  // 任务输出信息（完整版）
   type Output = {
     taskId?: string
     taskStatus?: string
+    submitTime?: string
+    scheduledTime?: string
+    endTime?: string
+    outputImageUrl?: string
+    code?: string
+    message?: string
+    taskMetrics?: TaskMetrics
   }
 
   type PagePicture_ = {

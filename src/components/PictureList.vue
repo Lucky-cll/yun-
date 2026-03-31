@@ -36,11 +36,11 @@
                   <search-outlined />
                   搜索
                 </a-space>
-                <a-space @click="(e: MouseEvent) => doEdit(picture, e)">
+                <a-space v-if="canEdit" @click="(e: MouseEvent) => doEdit(picture, e)">
                   <edit-outlined />
                   编辑
                 </a-space>
-                <a-space @click="(e: MouseEvent) => doDelete(picture, e)">
+                <a-space v-if="canDelete" @click="(e: MouseEvent) => doDelete(picture, e)">
                   <delete-outlined />
                   删除
                 </a-space>
@@ -82,6 +82,8 @@ interface Props {
   loading?: boolean
   showOp?: boolean
   onReload?: () => void
+  canEdit?: boolean
+  canDelete?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -89,6 +91,8 @@ const props = withDefaults(defineProps<Props>(), {
   loading: false,
   showOp: false,
   onReload: () => {},
+  canEdit: false,
+  canDelete: false,
 })
 // 分享
 const doShare = (picture: API.PictureVO, e: MouseEvent) => {

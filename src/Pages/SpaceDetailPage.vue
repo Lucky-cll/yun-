@@ -2,12 +2,39 @@
   <div class="spaceDetail">
     <!-- 空间信息 -->
     <a-flex justify="space-between">
-      <h2>{{ space.spaceName }}（私有空间）</h2>
+      <h2 v-if="space.spaceType === 1">{{ space.spaceName }}(团队空间)</h2>
+      <h2 v-else>{{ space.spaceName }}（私有空间）</h2>
+
       <a-space size="middle">
-        <a-button type="primary" :href="`/add-picture?spaceId=${spaceId}`" target="_blank">
+        <a-button
+          type="primary"
+          v-if="canUploadPicture"
+          :href="`/add-picture?spaceId=${spaceId}`"
+          target="_blank"
+        >
           + 创建图片
         </a-button>
-        <a-button :icon="h(EditOutlined)" @click="doBatchEdit"> 批量编辑</a-button>
+        <a-button
+          type="primary"
+          ghost
+          :icon="h(TeamOutlined)"
+          :href="`/spaceUserManage/${id}`"
+          target="_blank"
+          v-if="canManageSpaceUser"
+        >
+          成员管理
+        </a-button>
+
+        <a-button
+          :icon="h(BarChartOutlined)"
+          :href="`/space-analyze?spaceId=${spaceId}`"
+          target="_blank"
+          type="primary"
+          ghost
+        >
+          空间分析</a-button
+        >
+        <a-button :icon="h(EditOutlined)" @click="doBatchEdit" v-if="canEditPicture">  批量编辑</a-button>
 
         <a-tooltip
           :title="`占用空间 ${formatSize(space.totalSize)} / ${formatSize(space.maxSize)}`"
@@ -36,7 +63,7 @@
       :pictureList="dataList"
     />
     <!-- 图片列表 -->
-    <PictureList :dataList="dataList" :loading="loading" showOp :onReload="fetchData" />
+    <PictureList :dataList="dataList" :loading="loading"  :canEdit="canEditPicture" :canDelete="canDeletePicture" showOp :onReload="fetchData" />
     <a-pagination
       style="text-align: right"
       v-model:current="searchParams.current"
@@ -49,7 +76,7 @@
 </template>
 <script setup lang="ts">
 import PictureSearchForm from '@/components/PictureSearchForm.vue'
-import { ref, onMounted, reactive, h } from 'vue'
+import { ref, onMounted, reactive, h, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getSpaceVoByIdUsingGet } from '@/api/spaceController'
 import {
@@ -60,12 +87,27 @@ import { message } from 'ant-design-vue'
 import { formatSize } from '@/utils/index'
 import PictureList from '@/components/PictureList.vue'
 import { ColorPicker } from 'vue3-colorpicker'
-import { EditOutlined } from '@ant-design/icons-vue'
+import { BarChartOutlined, EditOutlined, TeamOutlined } from '@ant-design/icons-vue'
 import 'vue3-colorpicker/style.css'
+import { computed } from 'vue'
+import { SPACE_PERMISSION_ENUM } from '@/constants/space'
 import BatchEditPictureModal from '@/components/BatchEditPictureModal.vue'
 interface props {
   id: string
 }
+// 通用权限检查函数
+function createPermissionChecker(permission: string) {
+  return computed(() => {
+    return (space.value.permissionList ?? []).includes(permission)
+  })
+}
+
+// 定义权限检查
+const canManageSpaceUser = createPermissionChecker(SPACE_PERMISSION_ENUM.SPACE_USER_MANAGE)
+const canUploadPicture = createPermissionChecker(SPACE_PERMISSION_ENUM.PICTURE_UPLOAD)
+const canEditPicture = createPermissionChecker(SPACE_PERMISSION_ENUM.PICTURE_EDIT)
+const canDeletePicture = createPermissionChecker(SPACE_PERMISSION_ENUM.PICTURE_DELETE)
+
 const props = defineProps<props>()
 const spaceId = props.id
 const space = ref<API.SpaceVO>({})
@@ -152,5 +194,12 @@ const fetchData = async () => {
 onMounted(() => {
   fetchData()
 })
+watch(
+  () => props.id,
+  (newSpaceId) => {
+    fetchSpaceDetail()
+    fetchData()
+  },
+)
 </script>
 <style scoped></style>

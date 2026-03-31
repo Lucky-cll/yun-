@@ -64,13 +64,13 @@
           </a-descriptions>
           <ShareModal ref="shareModal" :link="shareLink" />
           <a-space wrap>
-            <a-button v-if="canEdit" type="default" @click="doEdit">
+            <a-button v-if="canEdit || canEditRole" type="default" @click="doEdit">
               编辑
               <template #icon>
                 <EditOutlined />
               </template>
             </a-button>
-            <a-button v-if="canEdit" danger @click="doDelete">
+            <a-button v-if="canEdit || canDeleteRole" danger @click="doDelete">
               删除
               <template #icon>
                 <DeleteOutlined />
@@ -100,6 +100,7 @@ import { ref, onMounted, computed } from 'vue'
 import { getPictureVoByIdUsingGet } from '@/api/pictureController'
 import { message } from 'ant-design-vue'
 import { formatSize } from '@/utils'
+import { SPACE_PERMISSION_ENUM } from '@/constants/space'
 import { useLoginUserStore } from '@/stores/useLoginUserStore'
 import { DeleteOutlined, EditOutlined, DownloadOutlined, ShareAltOutlined } from '@ant-design/icons-vue'
 import { deletePictureUsingPost } from '@/api/pictureController'
@@ -115,6 +116,15 @@ const loginUserStore = useLoginUserStore()
 const loading = ref(true)
 const shareLink = ref<string>()
 const shareModal = ref()
+// 通用权限检查函数
+function createPermissionChecker(permission: string) {
+  return computed(() => {
+    return (picture.value.permissionList ?? []).includes(permission)
+  })
+}
+// 定义权限检查
+const canEditRole = createPermissionChecker(SPACE_PERMISSION_ENUM.PICTURE_EDIT)
+const canDeleteRole = createPermissionChecker(SPACE_PERMISSION_ENUM.PICTURE_DELETE)
 
 const canEdit = computed(() => {
   const loginUser = loginUserStore.loginUser
