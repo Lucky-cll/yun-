@@ -169,7 +169,7 @@ const fetchDataList = async () => {
     dataList.value = res.data.data.records ?? []
     total.value = res.data.data.total ?? 0
   } else {
-    message.error('获取空间列表数据失败：' + res.data.message)
+    message.error('获取空间列表失败：' + res.data.message)
   }
 }
 const onPageChange = (page: any) => {
