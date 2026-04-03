@@ -70,6 +70,7 @@ import { useLoginUserStore } from '@/stores/useLoginUserStore'
 import { userLogoutUsingPost } from '@/api/userController'
 import { message } from 'ant-design-vue'
 import { computed } from 'vue'
+import { GithubOutlined } from '@ant-design/icons-vue'
 const userStore = useLoginUserStore()
 const originalItems = [
   {
@@ -103,9 +104,17 @@ const originalItems = [
     title: '空间管理',
   },
   {
-    key: '编程导航',
-    label: h('a', { href: 'https://www.codefather.cn', target: '_blank' }, '编程导航'),
-    title: '编程导航',
+    key: 'github',
+    label: h(
+      'a',
+      {
+        href: 'https://github.com/Lucky-cll/yun-',
+        target: '_blank',
+        style: { display: 'inline-flex', alignItems: 'center', gap: '6px' },
+      },
+      [h(GithubOutlined), 'GitHub 仓库'],
+    ),
+    title: 'GitHub 仓库',
   },
 ]
 const filterMenu = (menus = [] as MenuProps['items']) => {

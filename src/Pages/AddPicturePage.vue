@@ -43,6 +43,7 @@
         :imageUrl="picture?.url"
         :picture="picture"
         :spaceId="spaceId"
+        :space="space"
         :onSuccess="onCropSuccess"
       />
     </div>
@@ -93,7 +94,7 @@
 <script lang="ts" setup>
 import PictureUpdate from '@/components/PictureUpdate.vue'
 import PictureUrlUpload from '@/components/PictureUrlUpload.vue'
-import { reactive, ref, onMounted, h, computed } from 'vue'
+import { reactive, ref, onMounted, h, computed , watchEffect} from 'vue'
 import { message } from 'ant-design-vue'
 import { EditOutlined, FullscreenOutlined } from '@ant-design/icons-vue'
 import {
@@ -101,6 +102,7 @@ import {
   listPictureTagCategoryUsingGet,
   getPictureVoByIdUsingGet,
 } from '@/api/pictureController'
+import { getSpaceVoByIdUsingGet } from '@/api/spaceController'
 import ImageCropperModel from '@/components/ImageCropperModel.vue'
 import ImageOutAIModal from '@/components/ImageOutAIModal.vue'
 import router from '@/router'
@@ -118,19 +120,42 @@ const uploadType = ref<'file' | 'url'>('file')
 const spaceId = computed(() => route.query?.spaceId as number | string)
 const imageCropperRef = ref()
 const imageOutPaintingRef = ref()
+const space = ref<API.SpaceVO>()
+
+// 获取空间信息
+const fetchSpace = async () => {
+  // 获取数据
+  if (spaceId.value) {
+    const res = await getSpaceVoByIdUsingGet({
+      id: spaceId.value,
+    })
+    if (res.data.code === 0 && res.data.data) {
+      space.value = res.data.data
+    }
+  }
+}
+
+watchEffect(() => {
+  fetchSpace()
+})
+
+// 编辑图片弹框
 const doEditPicture = () => {
   if (imageCropperRef.value) {
     imageCropperRef.value.openModal()
   }
 }
+// AI 扩图弹框
 const doImagePainting = () => {
   if (imageOutPaintingRef.value) {
     imageOutPaintingRef.value.openModal()
   }
 }
+// 编辑图片成功回调
 const onCropSuccess = (newPicture: API.PictureVO) => {
   picture.value = newPicture
 }
+// AI 扩图成功回调
 const onImageOutPaintingSuccess = (newPicture: API.PictureVO) => {
   picture.value = newPicture
 }

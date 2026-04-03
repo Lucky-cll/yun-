@@ -14,7 +14,7 @@
       </a-layout>
 
       <a-layout-footer class="footer">
-        <a href="hhtps://www.codefather.cn" target="_blank">编程导航 by lucky斩</a>
+        <a href="https://github.com/Lucky-cll/yun-" target="_blank">github by lucky-cll</a>
       </a-layout-footer>
     </a-layout>
   </div>
