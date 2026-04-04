@@ -1,10 +1,19 @@
 import axios from 'axios'
 import type { AxiosInstance } from 'axios'
-const myAxios: AxiosInstance = axios.create({
-  baseURL: '',
-  timeout: 30000,
+import { message } from 'ant-design-vue'
+import router from '@/router'
+
+// 区分开发和生产环境
+const DEV_BASE_URL = "http://localhost:8123";
+const PROD_BASE_URL = 'http://47.95.234.67'
+// 创建 Axios 实例
+const myAxios = axios.create({
+  baseURL: PROD_BASE_URL,
+  timeout: 10000,
   withCredentials: true,
-})
+});
+
+
 // 添加请求拦截器
 myAxios.interceptors.request.use(
   function (config) {
@@ -20,11 +29,32 @@ myAxios.interceptors.request.use(
 // 添加响应拦截器
 myAxios.interceptors.response.use(
   function (response) {
-    // 2xx 范围内的状态码都会触发该函数。
     // 对响应数据做点什么
     const { data } = response
-    if (data.code === 40100) {
+
+    // 严格按照后端 ErrorCode 处理
+    if (data.code === 40000) {
+      message.error(data.message)
+    } else if (data.code === 40100) {
+      message.error(data.message)
+      // 核心：确保能拿到当前路由地址
+      const currentPath = router.currentRoute.value.path
+      // 不是首页，才跳转登录
+      if (currentPath !== '/') {
+        router.push('/user/login')
+      }
+    } else if (data.code === 40101) {
+      message.error(data.message)
+    } else if (data.code === 40300) {
+      message.error(data.message)
+    } else if (data.code === 40400) {
+      message.error(data.message)
+    } else if (data.code === 50000) {
+      message.error(data.message)
+    } else if (data.code === 50001) {
+      message.error(data.message)
     }
+
     return response
   },
   function (error) {
@@ -33,4 +63,5 @@ myAxios.interceptors.response.use(
     return Promise.reject(error)
   },
 )
+
 export default myAxios
