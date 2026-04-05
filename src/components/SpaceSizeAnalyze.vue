@@ -69,11 +69,6 @@ const fetchData = async () => {
 }
 
 
-// 确保组件初始化时获取数据
-onMounted(() => {
-  fetchData()
-})
-
 // 监听属性变化，重新获取数据
 watchEffect(() => {
   fetchData()

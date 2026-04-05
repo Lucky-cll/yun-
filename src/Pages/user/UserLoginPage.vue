@@ -80,7 +80,6 @@ h1 {
 .userLoginPage {
   margin: 0 auto;
   max-width: 560px;
-  background-image: url('@/assets/你的背景图.jpg');
   background-size: cover; /* 背景图铺满容器 */
   background-position: center; /* 背景图居中 */
   background-repeat: no-repeat; /* 禁止重复 */
